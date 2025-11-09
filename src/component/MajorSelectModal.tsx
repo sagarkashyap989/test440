@@ -41,7 +41,7 @@ export default function MajorSelectModal({
     const handleCreate = async () => {
         const created = { id: -1, name: newMajor, universityId: selectedUniversity?.id || null };
         try {
-            const res = await fetch(`/api/major`, { //pass query in body    
+            const res = await fetch(`/api/majors`, { //pass query in body    
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
 

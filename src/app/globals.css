@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
 
 :root {
   --background: #ffffff;
@@ -28,4 +31,30 @@ body {
 .mdn-div {
   display: flex;
   flex-direction: column;
+}
+
+.highlight-important {
+  background-color: #ff6b6b;
+}
+
+.highlight-medium {
+  background-color: #f9d949;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.highlight-light {
+  background-color: #81c784;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.highlight-important {
+  background-color: rgba(255, 99, 71, 0.5); /* red tint */
+}
+.highlight-medium {
+  background-color: rgba(255, 215, 0, 0.5); /* yellow tint */
+}
+.highlight-light {
+  background-color: rgba(144, 238, 144, 0.5); /* green tint */
 }

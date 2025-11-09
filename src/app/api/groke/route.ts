@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    console.log(parsedSyllabus,'parsedSyllabus')
 
     const backendResponse = await fetch(`https://server404-production.up.railway.app/groke`, {
       method: 'POST',
@@ -69,61 +70,58 @@ const parseSyllabusWithGemini = async (rawSyllabusText: string): Promise<ParsedS
       .join('\n')
       .trim();
 
-          const prompt = `
-      You are an expert syllabus parser that strictly follows output formatting rules.
+    const prompt = `
+You are an expert syllabus parser that strictly follows output formatting rules.
 
-      IMPORTANT INSTRUCTIONS:
-      1. Extract ONLY the actual syllabus content, ignoring any irrelevant text
-      2. Split ALL topic lists into individual items (never combine multiple topics in one item)
-      3. Create separate modules for each Unit (Unit 1, Unit 2, etc.)
-      4. For content under "General Principles", create a separate module within the same Unit
-      5. Follow EXACTLY this JSON structure:
-      {
-        "id": number,
-        "semester_id": 1,
-        "course_code": "course code",
-        "course_title": "course name ",
-        "credits": number,
-        "major_id": null,
-        "modules": [
-          {
-            "id": number,
-            "course_id": same_as_parent_id,
-            "name": "string",
-            "module_number": sequential (1, 2, 3...),
-            "unit_number": 1,
-            "topics": [
-              {
-                "id": number,
-                "chapter_id": same_as_module_id,
-                "title": "string"
-              }
-            ]
-          }
-        ]
-      }
+IMPORTANT INSTRUCTIONS:
+1. Extract ONLY the actual syllabus content, ignoring any irrelevant text
+2. Split ALL topic lists into individual items (never combine multiple topics in one item)
+3. Create separate modules for each Unit (Unit 1, Unit 2, etc.)
+4. For content under "General Principles", create a separate module within the same Unit
+5. Follow EXACTLY this JSON structure:
+{
+  "id": number,
+  "semester_id": 1,
+  "course_code": "COURSECODE",
+  "course_title": "course_title",
+  "credits": 3,
+  "major_id": null,
+  "modules": [
+    {
+      "id": number,
+      "course_id": same_as_parent_id,
+      "name": "string",
+      "module_number": sequential (1, 2, 3...),
+      "unit_number": 1,
+      "topics": [
+        {
+          "id": number,
+          "chapter_id": same_as_module_id,
+          "title": "string"
+        }
+      ]
+    }
+  ]
+}
 
-      SPECIFIC RULES:
-      1. Unit 1 content should create two modules:
-        - First module: "Introduction to Simulation and Statistical Models" (this is just example you choose  as you think according to the text)
-        - Second module: "General Principles" (from the General Principles section) (this is just example you choose  as you think according to the text)
-      2. Unit 2 content should create one module
-      3. NEVER combine topics from different sections
-      4. Remove colons from topic titles (e.g., "Introduction to Simulation" not "Introduction to Simulation:")
-      5. Set course_code to as you think according to the text
-      6. Set course_title to  as you think according to the text
-      7. Set credits to 3
-      8. Set major_id to null
-      9. All unit_number values should be 1
-      10. Topics should be split at commas and colons
+SPECIFIC RULES:
+3. NEVER combine topics from different sections
+4. Remove colons from topic titles (e.g., "Introduction to Simulation" not "Introduction to Simulation:")
+5. Set course_code to "SIM101"
+6. Set course_title to "Introduction to Simulation and Statistical Models"
+7. Set credits to 3
+8. Set major_id to null
+9. All unit_number values should be 1
+10. Topics should be split at commas and colons
 
-      Raw syllabus text:
-      """
-      ${cleanedText}
-      """
+Raw syllabus text:
+"""
+${cleanedText}
+"""
 
-      ONLY RETURN THE JSON OUTPUT, NOTHING ELSE. DO NOT INCLUDE ANY EXPLANATIONS.`;
- 
+ONLY RETURN THE JSON OUTPUT, NOTHING ELSE. DO NOT INCLUDE ANY EXPLANATIONS.`;
+
+
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB6FTfeIq4MsPfl2wJO0x9XWl2fr3aovyE`;
 
     const response = await fetch(apiUrl, {
@@ -167,7 +165,7 @@ const parseSyllabusWithGemini = async (rawSyllabusText: string): Promise<ParsedS
         throw e;
       }
     }
-console.log(parsedResponse, 'respoce from gemini')
+    console.log(parsedResponse, 'respoce from gemini')
     // Validate and normalize the response
     if (!parsedResponse || !parsedResponse.modules || !Array.isArray(parsedResponse.modules)) {
       throw new Error("Invalid response structure from Gemini");
@@ -188,7 +186,7 @@ console.log(parsedResponse, 'respoce from gemini')
       });
     });
 
-    console.log(parsedResponse,'parsedResponse')
+    console.log(parsedResponse, 'parsedResponse')
     return parsedResponse as ParsedSyllabus;
   } catch (error) {
     console.error('Error parsing with Gemini:', error);

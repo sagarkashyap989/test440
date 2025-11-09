@@ -6,20 +6,23 @@ import { useState } from 'react';
 
 type Props = {
   topicTitle: string;
+  fetchExplanations: Function;
 };
 
-export default function PromptInput({ topicTitle }: Props) {
+export default function PromptInput({ topicTitle, fetchExplanations }: Props) {
   const [prompt, setPrompt] = useState('');
   const addExplanation = useExplanationStore((state) => state.addExplanation);
 
   const handleSubmit = async () => {
     // TODO: Call API with custom prompt
-    addExplanation(topicTitle, {
-      id: Date.now(), // Better ID generation using timestamp
-      text: 'this is a new explanation for ' + topicTitle,
-      prompt: 'test prompt',
-      likes: 99
-    });
+    fetchExplanations({prompt});
+
+    // addExplanation(topicTitle, {
+    //   id: Date.now(), // Better ID generation using timestamp
+    //   text: 'this is a new explanation for ' + topicTitle,
+    //   prompt: 'test prompt',
+    //   likes: 99
+    // });
     console.log(`Prompt for ${topicTitle}: ${prompt}`);
     setPrompt('');
   };

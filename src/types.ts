@@ -2,7 +2,7 @@
 //ParsedSyllabus.tsx
 export type Explanation = {
   id: number;
-  text: string;
+  text: any;
   prompt: string;
   likes: number;
   liked_by?: number[];

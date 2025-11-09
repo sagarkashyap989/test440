@@ -9,8 +9,8 @@ import { useLearnedTopicsStore } from '@/app/stores/learnedTopicsStore';
 type Props = {
   topicTitle: string;
   topicId?: number; // Optional, if needed for API calls
-  chapter_id: number; // Optional, if needed for API calls
-  course_id: number; // Optional, if needed for API calls
+  chapter_id?: number; // Optional, if needed for API calls
+  course_id?: number; // Optional, if needed for API calls
 };
 
 export default function MarkAsLearnedToggle({ topicTitle, topicId, chapter_id,course_id }: Props) { 

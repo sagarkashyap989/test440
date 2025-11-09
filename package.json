@@ -21,7 +21,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
+    "rehype-parse": "^9.0.1",
+    "rehype-react": "^8.0.0",
+    "swiper": "^11.2.10",
     "tesseract.js": "^6.0.1",
+    "unified": "^11.0.5",
     "zustand": "^5.0.5"
   },
   "devDependencies": {

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import MarkAsLearnedToggle from './MarkAsLearnedToggle'; 
-import { Explanation, TopicExplanationProps } from '@/types'; 
+import MarkAsLearnedToggle from './MarkAsLearnedToggle';
+import { Explanation, TopicExplanationProps } from '@/types';
 
- 
+
 export default function TopicExplanation({ topic }: TopicExplanationProps) {
   const [expanded, setExpanded] = useState(false);
   const [explanations, setExplanations] = useState<Explanation[]>(topic.explanations);
@@ -54,6 +54,20 @@ export default function TopicExplanation({ topic }: TopicExplanationProps) {
   };
 
   const explanation = sortedExplanations[currentIndex] || explanations[0];
+  // Inside your TopicExplanation component
+  let structuredContent: { type: string; content: any }[] = [];
+
+  try {
+    const jsonMatch = explanation.text.match(/```(?:json)?\n([\s\S]*?)\n```/);
+    if (jsonMatch) {
+      structuredContent = JSON.parse(jsonMatch[1]);
+    } else {
+      console.warn("No JSON content found in explanation text.");
+    }
+  } catch (error) {
+    console.error("Failed to parse explanation text:", error);
+  }
+
 
   return (
     <div className="border rounded mb-4">
@@ -68,13 +82,57 @@ export default function TopicExplanation({ topic }: TopicExplanationProps) {
 
       {expanded && (
         <div className="p-3 bg-white space-y-4">
-          <div className="whitespace-pre-wrap text-gray-800 border p-3 rounded shadow-sm min-h-[80px]">
+          {/* <div className="whitespace-pre-wrap text-gray-800 border p-3 rounded shadow-sm min-h-[80px]">
             {explanation.text}
-          </div>
+          </div> */}
+
+          {structuredContent.length > 0 ? (
+            <div className="space-y-4">
+              {structuredContent.map((section, idx) => {
+                if (section.type === 'paragraph') {
+                  return (
+                    <p key={idx} className="text-gray-800 leading-relaxed">
+                      {section.content}
+                    </p>
+                  );
+                } else if (section.type === 'table') {
+                  return (
+                    <div key={idx} className="overflow-x-auto">
+                      <table className="min-w-full table-auto border border-gray-300 text-left text-sm">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            {section.content.headers.map((header: string, hIdx: number) => (
+                              <th key={hIdx} className="px-4 py-2 border">{header}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.content.rows.map((row: string[], rIdx: number) => (
+                            <tr key={rIdx} className="even:bg-gray-50">
+                              {row.map((cell: string, cIdx: number) => (
+                                <td key={cIdx} className="px-4 py-2 border">{cell}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </div>
+          ) : (
+            <div className="whitespace-pre-wrap text-gray-800 border p-3 rounded shadow-sm min-h-[80px]">
+              {explanation.text}
+            </div>
+          )}
+
 
           <div>
             <label htmlFor={`prompt-${topic.title}`} className="block mb-1 font-medium">
-              Not clear? Ask again in your own words
+              Not clear? Ask again in your own wwwwwwords
             </label>
             <input
               id={`prompt-${topic.title}`}
@@ -92,7 +150,7 @@ export default function TopicExplanation({ topic }: TopicExplanationProps) {
             >
               {loading ? 'Generating...' : 'Generate Explanation'}
             </button>
-          </div> 
+          </div>
 
           {/* Explanation Carousel */}
           <div className="flex overflow-x-auto space-x-4 mt-4 py-2 border-t">
@@ -100,14 +158,13 @@ export default function TopicExplanation({ topic }: TopicExplanationProps) {
               <div
                 key={exp.id}
                 onClick={() => setCurrentIndex(idx)}
-                className={`min-w-[220px] p-3 rounded cursor-pointer border ${
-                  idx === currentIndex ? 'border-blue-600 bg-blue-50' : 'border-gray-300'
-                }`}
+                className={`min-w-[220px] p-3 rounded cursor-pointer border ${idx === currentIndex ? 'border-blue-600 bg-blue-50' : 'border-gray-300'
+                  }`}
               >
                 <div className="text-sm italic text-gray-600 mb-2 truncate max-w-[200px]">
                   Prompt: {exp.prompt}
-                </div>  
-                
+                </div>
+
                 <div className="text-gray-700 mb-2 whitespace-normal max-h-24 overflow-hidden text-ellipsis">
                   {exp.text}
                 </div>
