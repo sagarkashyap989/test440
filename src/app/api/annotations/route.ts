@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
     try {
         const explanation_id = req.nextUrl.searchParams.get('explanation_id');
 
+
         if (!explanation_id) {
             return NextResponse.json({ error: 'explanation_id is required' }, { status: 400 });
         }
@@ -29,8 +30,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const { userId, explanationId, text, note, highlightType } = await req.json();
-    console.log({ userId, explanationId, text, note, highlightType }, '{ title,contextString,prompt } ')
+    const { userId,
+        explanationId,
+        text,
+        note,
+        highlightType,
+        paragraphIndex,
+        startIndex,
+        endIndex, } = await req.json(); 
     if (!userId && !explanationId) {
         return NextResponse.json({ error: 'Missing userId of explanation id' }, { status: 400 });
     }
@@ -40,7 +47,16 @@ export async function POST(req: NextRequest) {
         const response = await fetch(`${process.env.API_URL}annotations`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, explanationId, text, note, highlightType })
+            body: JSON.stringify({
+                userId,
+                explanationId,
+                text,
+                note,
+                highlightType,
+                paragraphIndex,
+                startIndex,
+                endIndex,
+            })
         });
 
 

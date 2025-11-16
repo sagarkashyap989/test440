@@ -11,133 +11,133 @@ type Params = {
 export async function GET(req: NextRequest, context: Params) {
   try {
 
-    return NextResponse.json([
-      {
-        "topic_id": 44,
-        "chapter_id": 11,
-        "course_id": null
-      },
-      {
-        "topic_id": 50,
-        "chapter_id": 12,
-        "course_id": null
-      },
-      {
-        "topic_id": 82,
-        "chapter_id": 14,
-        "course_id": null
-      },
-      {
-        "topic_id": 83,
-        "chapter_id": 14,
-        "course_id": null
-      },
-      {
-        "topic_id": 84,
-        "chapter_id": 14,
-        "course_id": null
-      },
-      {
-        "topic_id": 85,
-        "chapter_id": 14,
-        "course_id": null
-      },
-      {
-        "topic_id": 86,
-        "chapter_id": 14,
-        "course_id": null
-      },
-      {
-        "topic_id": 89,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 90,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 91,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 92,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 93,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 87,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 88,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 94,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 95,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 96,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 97,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 98,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 99,
-        "chapter_id": 15,
-        "course_id": null
-      },
-      {
-        "topic_id": 49,
-        "chapter_id": 11,
-        "course_id": null
-      },
-      {
-        "topic_id": 48,
-        "chapter_id": 11,
-        "course_id": null
-      },
-      {
-        "topic_id": 47,
-        "chapter_id": 11,
-        "course_id": null
-      },
-      {
-        "topic_id": 46,
-        "chapter_id": 11,
-        "course_id": null
-      },
-      {
-        "topic_id": 45,
-        "chapter_id": 11,
-        "course_id": null
-      }
-    ]);
+    // return NextResponse.json([
+    //   {
+    //     "topic_id": 44,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 50,
+    //     "chapter_id": 12,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 82,
+    //     "chapter_id": 14,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 83,
+    //     "chapter_id": 14,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 84,
+    //     "chapter_id": 14,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 85,
+    //     "chapter_id": 14,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 86,
+    //     "chapter_id": 14,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 89,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 90,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 91,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 92,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 93,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 87,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 88,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 94,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 95,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 96,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 97,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 98,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 99,
+    //     "chapter_id": 15,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 49,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 48,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 47,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 46,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   },
+    //   {
+    //     "topic_id": 45,
+    //     "chapter_id": 11,
+    //     "course_id": null
+    //   }
+    // ]);
     const user_id = parseInt(context.params.id);
     // let userID = Number(auth0_id.split('|')[1]); 
 

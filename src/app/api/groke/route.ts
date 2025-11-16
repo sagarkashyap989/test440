@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
     console.log(parsedSyllabus,'parsedSyllabus')
 
-    const backendResponse = await fetch(`https://server404-production.up.railway.app/groke`, {
+    const backendResponse = await fetch(`${process.env.API_URL}groke`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,9 +106,9 @@ IMPORTANT INSTRUCTIONS:
 
 SPECIFIC RULES:
 3. NEVER combine topics from different sections
-4. Remove colons from topic titles (e.g., "Introduction to Simulation" not "Introduction to Simulation:")
+4. Remove colons from topic titles to something suitable
 5. Set course_code to "SIM101"
-6. Set course_title to "Introduction to Simulation and Statistical Models"
+6. Set course_title to something suitable
 7. Set credits to 3
 8. Set major_id to null
 9. All unit_number values should be 1
@@ -122,7 +122,7 @@ ${cleanedText}
 ONLY RETURN THE JSON OUTPUT, NOTHING ELSE. DO NOT INCLUDE ANY EXPLANATIONS.`;
 
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB6FTfeIq4MsPfl2wJO0x9XWl2fr3aovyE`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyBmMesfCQC1hjj7qGiu0VKyXjND_gmvV-Y`;
 
     const response = await fetch(apiUrl, {
       method: 'POST',

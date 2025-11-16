@@ -50,11 +50,39 @@ body {
 }
 
 .highlight-important {
-  background-color: rgba(255, 99, 71, 0.5); /* red tint */
+  background-color: rgba(255, 99, 71, 0.5);
+  /* red tint */
 }
+
 .highlight-medium {
-  background-color: rgba(255, 215, 0, 0.5); /* yellow tint */
+  background-color: rgba(255, 215, 0, 0.5);
+  /* yellow tint */
 }
+
 .highlight-light {
-  background-color: rgba(144, 238, 144, 0.5); /* green tint */
+  background-color: rgba(144, 238, 144, 0.5);
+  /* green tint */
 }
+
+.highlight-important {
+  background-color: rgba(255, 0, 0, 0.35);
+}
+
+.highlight-medium {
+  background-color: rgba(255, 255, 0, 0.35);
+}
+
+.highlight-light {
+  background-color: rgba(0, 255, 0, 0.35);
+}
+
+.has-note {
+  cursor: pointer;
+}
+
+
+.highlight-red { background-color: rgba(255, 99, 99, 0.4); }
+.highlight-yellow { background-color: rgba(255, 255, 99, 0.4); }
+.highlight-green { background-color: rgba(99, 255, 99, 0.4); }
+.highlight-note { background-color: rgba(99, 170, 255, 0.4); }
+.has-note { cursor: pointer; border-radius: 2px; }

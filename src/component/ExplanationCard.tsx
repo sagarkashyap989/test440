@@ -4,31 +4,39 @@ import { CardProps } from '@/types';
 import { useState, useRef, useEffect } from 'react';
 import { useUserStore } from '@/app/stores/userStore';
 
-export default function ExplanationCard({ explanation }: CardProps) {
+interface NoteData {
+  text: string;
+  note: string;
+  paragraphIndex: number;
+  start: number;
+  end: number;
+  className: string;
+}
 
+export default function ExplanationCard({ explanation }: CardProps) {
   const user = useUserStore((state) => state.user);
 
   const [selectedText, setSelectedText] = useState<string>("");
   const [buttonPos, setButtonPos] = useState<{ top: number; left: number } | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [notes, setNotes] = useState<{ text: string; note: string }[]>([]);
+  const [notes, setNotes] = useState<NoteData[]>([]);
   const [tooltip, setTooltip] = useState<{ visible: boolean; text: string; x: number; y: number }>({
     visible: false,
     text: "",
     x: 0,
     y: 0,
   });
-
+  const [activeParagraphIndex, setActiveParagraphIndex] = useState<number | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleMouseUp = (e: MouseEvent | React.MouseEvent) => {
-    // If clicking inside popup form, don't reset selection
-    if (formRef.current && formRef.current.contains(e.target as Node)) {
-      return;
-    }
+  // -----------------------------------
+  //  HANDLE TEXT SELECTION
+  // -----------------------------------
+  const handleMouseUp = (e: MouseEvent | React.MouseEvent, paragraphIndex: number) => {
+    if (formRef.current && formRef.current.contains(e.target as Node)) return;
 
     const selection = window.getSelection();
     if (selection && selection.toString().trim()) {
@@ -38,52 +46,124 @@ export default function ExplanationCard({ explanation }: CardProps) {
       if (containerRef.current) {
         const containerRect = containerRef.current.getBoundingClientRect();
         setButtonPos({
-          top: rect.top - containerRect.top - 30,
+          top: rect.top - containerRect.top - 35,
           left: rect.left - containerRect.left,
         });
       }
 
       setSelectedText(selection.toString().trim());
+      setActiveParagraphIndex(paragraphIndex);
       setShowForm(false);
     } else {
       setButtonPos(null);
       setSelectedText("");
+      setActiveParagraphIndex(null);
       setShowForm(false);
     }
   };
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Selected text:", selectedText);
-    console.log("Input value:", inputValue);
-    setNotes((prev) => [...prev, { text: selectedText, note: inputValue }]);
+  // -----------------------------------
+  // fetchAnnotations
+  // -----------------------------------
+  useEffect(() => {
+    const fetchAnnotations = async () => {
+      try {
 
-    setInputValue("");
-    setShowForm(false);
-    setButtonPos(null);
+        const res = await fetch(`/api/annotations?explanation_id=${explanation.id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
+        const fetchedNotes: NoteData[] = data.map((a: any) => ({
+          className:a.highlight_type,
+          end: a.end_index,
+          note: a.note,
+          paragraphIndex: a.paragraph_index,
+          start: a.start_index,
+          text: a.text,
+        }));
+
+        setNotes(fetchedNotes);
+      } catch (err) {
+        console.error("Error fetching annotations:", err);
+      }
+    };
+
+    fetchAnnotations();
+  }, [explanation.id]);
+
+  // -----------------------------------
+  // saveAnnotationToBackend
+  // -----------------------------------
+  const saveAnnotationToBackend = async (noteData: NoteData) => {
     try {
-      const res = await fetch(`/api/annotations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.id, explanationId: explanation.id, text: selectedText, note: inputValue, highlightType: null }),
+      const response = await fetch("/api/annotations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user?.id,
+          explanationId: explanation.id,
+          text: noteData.text,
+          note: noteData.note,
+          highlightType: noteData.className,
+          paragraphIndex: noteData.paragraphIndex,
+          startIndex: noteData.start,
+          endIndex: noteData.end,
+        }),
       });
 
-      console.log(res);
-      if (!res.ok) {
-        throw new Error('Failed to inserting annotation');
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Failed to save annotation:", data.message);
       }
-
-    } catch (error) {
-      // Before: ["a", "b", "c"]
-      setNotes((prev) => prev.slice(0, -1));
-      // After: ["a", "b"]
-
-      console.error('Error inserting annotation:', error);
-    } finally {
+    } catch (err) {
+      console.error("Error saving annotation:", err);
     }
   };
 
 
+  // -----------------------------------
+  //  APPLY HIGHLIGHT
+  // -----------------------------------
+  const applyHighlight = (className: string) => {
+    if (!selectedText || activeParagraphIndex === null) return;
+
+    const block = explanation.text[activeParagraphIndex];
+    const plainText = block.content;
+
+    const start = plainText.indexOf(selectedText);
+    if (start === -1) return;
+    const end = start + selectedText.length;
+
+    const newNote: NoteData = {
+      text: selectedText,
+      note: inputValue || "",
+      paragraphIndex: activeParagraphIndex,
+      start,
+      end,
+      className,
+    };
+
+    setNotes((prev) => [...prev, newNote]);
+    saveAnnotationToBackend(newNote)
+    // reset
+    setInputValue("");
+    setShowForm(false);
+    setButtonPos(null);
+    setSelectedText("");
+  };
+
+  // -----------------------------------
+  //  FORM SUBMIT
+  // -----------------------------------
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedText || activeParagraphIndex === null) return;
+    applyHighlight("highlight-note");
+  };
+
+  // -----------------------------------
+  //  CLICK OUTSIDE HANDLER
+  // -----------------------------------
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -99,6 +179,9 @@ export default function ExplanationCard({ explanation }: CardProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // -----------------------------------
+  //  TOOLTIP HOVER HANDLERS
+  // -----------------------------------
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -133,126 +216,49 @@ export default function ExplanationCard({ explanation }: CardProps) {
     };
   }, []);
 
+  // -----------------------------------
+  //  HIGHLIGHTING LOGIC
+  // -----------------------------------
+  const highlightNotes = (content: string, paragraphIndex: number) => {
+    let newContent = content;
+    const paragraphNotes = notes
+      .filter((note) => note.paragraphIndex === paragraphIndex)
+      .sort((a, b) => b.start - a.start); // reverse to avoid messing indexes
 
-
-  const applyHighlight = async (className: string) => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const selectedText = selection.toString();
-
-    if (!selectedText.trim()) return;
-
-    const span = document.createElement("span");
-    span.className = className;
-    span.style.backgroundColor =
-      className === "highlight-important"
-        ? "rgba(255, 99, 71, 0.5)"
-        : className === "highlight-medium"
-          ? "rgba(255, 215, 0, 0.5)"
-          : "rgba(144, 238, 144, 0.5)";
-
-    try {
-      range.surroundContents(span);
-      selection.removeAllRanges();
-    } catch (err) {
-      console.warn("Highlight failed:", err);
+    for (const n of paragraphNotes) {
+      const before = newContent.slice(0, n.start);
+      const middle = newContent.slice(n.start, n.end);
+      const after = newContent.slice(n.end);
+      newContent = `${before}<span class="has-note ${n.className}" data-note="${n.note}">${middle}</span>${after}`;
     }
 
-    // Use small timeout to let highlight DOM update before React touches anything
-    setTimeout(() => {
-      setButtonPos(null);
-      setShowForm(false);
-      setSelectedText("");
-    }, 100);
-
-    try {
-      const res = await fetch(`/api/annotations`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.id, explanationId: explanation.id, text: selectedText, note: null, highlightType: className.split('-')[1] }),
-      });
-
-      console.log(res);
-      if (!res.ok) {
-        throw new Error('Failed to inserting annotation');
-      }
-    } catch (error) {
-      // Before: ["a", "b", "c"]
-      setNotes((prev) => prev.slice(0, -1));
-      // After: ["a", "b"]
-
-      console.error('Error inserting annotation:', error);
-    } finally {
-    }
+    return newContent;
   };
 
-  useEffect(() => {
-    const fetchAnnotations = async () => {
-      try {
-        fetch(`/api/annotations?explanation_id=${explanation.id}`)
-          .then((res) => res.json())
-          .then(setNotes)
-          .catch(console.error);
-      } catch (err) {
-        console.error("Failed to load annotations", err);
-      }
-    };
-    fetchAnnotations();
-  }, [explanation.id]);
-
-
-  const highlightNotes = (htmlString: string) => {
-    let updatedHtml = htmlString;
-    notes.forEach(({ text }) => {
-      const regex = new RegExp(`(${text})`, "gi");
-      const noteData = notes.find(n => n.text.toLowerCase() === text.toLowerCase());
-      // if (noteData && noteData.text) {
-      //   const note = noteData.text.replace(/"/g, '&quot;'); // prevent quote breaking HTML
-      //   updatedHtml = updatedHtml.replace(
-      //     regex,
-      //     `<span class="highlight-medium" data-note="${note}">$1</span>`
-      //   );
-      // }
-
-      if (noteData && noteData.note) {
-        const note = noteData.note.replace(/"/g, '&quot;'); // prevent quote breaking HTML
-        updatedHtml = updatedHtml.replace(
-          regex,
-          `<strong class="has-note" data-note="${note}">$1</strong>`
-        );
-      }
-
-    });
-    return updatedHtml;
-  };
-
-  // Inside ExplanationCard component: 
-
+  // -----------------------------------
+  //  RENDER
+  // -----------------------------------
   return (
-    <div
-      ref={containerRef}
-      className="relative min-w-[300px] p-2 bg-gray-100 rounded-xl shadow"
-      onMouseUp={handleMouseUp}
-    >
+    <div ref={containerRef} className="relative min-w-[300px] p-2 bg-gray-100 rounded-xl shadow">
       <div className="relative min-w-[300px] p-4 bg-gray-100 rounded-xl shadow">
         <div className="whitespace-pre-wrap text-gray-800 border p-3 rounded shadow-sm min-h-[80px]">
           {explanation.text?.map((block: any, index: number) => {
-            //when i select the text and leave the mouse click, the selected text gets unselected and the text is also no highlighted
             if (block.type === "paragraph") {
               return (
-                <div key={index} className="my-2 leading-relaxed">
-                  {htmlToReact(highlightNotes(block.content))}
+                <div
+                  key={index}
+                  className="my-2 leading-relaxed"
+                  onMouseUp={(e) => handleMouseUp(e, index)}
+                >
+                  {htmlToReact(highlightNotes(block.content, index))}
                 </div>
-
               );
             }
-            //content in table get highlighted properly
+
             if (block.type === "table") {
               const { headers, rows } = block.content;
               return (
-                <div key={index} className="overflow-x-auto">
+                <div key={index} className="overflow-x-auto my-4">
                   <table className="min-w-full border border-gray-300 rounded-lg">
                     <thead className="bg-gray-200">
                       <tr>
@@ -273,10 +279,7 @@ export default function ExplanationCard({ explanation }: CardProps) {
                           className={rIndex % 2 === 0 ? "bg-white" : "bg-gray-50"}
                         >
                           {row.map((cell: string, cIndex: number) => (
-                            <td
-                              key={cIndex}
-                              className="border border-gray-300 px-4 py-2"
-                            >
+                            <td key={cIndex} className="border border-gray-300 px-4 py-2">
                               {cell}
                             </td>
                           ))}
@@ -292,49 +295,48 @@ export default function ExplanationCard({ explanation }: CardProps) {
           })}
         </div>
       </div>
+
       <LikeButton explanation={explanation} />
 
-      {/* Floating ? button */}
+      {/* Floating popup with highlight buttons */}
       {buttonPos && !showForm && (
-
         <div
           className="absolute flex items-center gap-2 bg-white border rounded-xl shadow-xl px-3 py-2 z-50"
           style={{ top: buttonPos.top, left: buttonPos.left }}
         >
           <button
-            className="  bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-blue-600 transition"
-
+            className="popup-button bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-blue-600 transition"
             onClick={() => setShowForm(true)}
           >
             ?
           </button>
           <button
-            className="bg-red-500 text-white px-3 py-1 text-sm rounded-md shadow-sm hover:bg-red-600 transition"
-            onClick={() => applyHighlight("highlight-important")}
+            className="bg-red-500 text-white px-3 py-1 text-sm rounded-md hover:bg-red-600 transition"
+            onClick={() => applyHighlight("highlight-red")}
           >
             🔴
           </button>
           <button
-            className="bg-yellow-400 text-white px-3 py-1 text-sm rounded-md shadow-sm hover:bg-yellow-500 transition"
-            onClick={() => applyHighlight("highlight-medium")}
+            className="bg-yellow-400 text-white px-3 py-1 text-sm rounded-md hover:bg-yellow-500 transition"
+            onClick={() => applyHighlight("highlight-yellow")}
           >
             🟡
           </button>
           <button
-            className="bg-green-500 text-white px-3 py-1 text-sm rounded-md shadow-sm hover:bg-green-600 transition"
-            onClick={() => applyHighlight("highlight-light")}
+            className="bg-green-500 text-white px-3 py-1 text-sm rounded-md hover:bg-green-600 transition"
+            onClick={() => applyHighlight("highlight-green")}
           >
             🟢
           </button>
         </div>
       )}
 
-      {/* Popup form */}
+      {/* Popup form for notes */}
       {buttonPos && showForm && (
         <form
           ref={formRef}
           onSubmit={handleFormSubmit}
-          className="absolute bg-white border rounded shadow-lg p-3 w-60"
+          className="absolute bg-white border rounded shadow-lg p-3 w-60 z-50"
           style={{ top: buttonPos.top + 35, left: buttonPos.left }}
         >
           <p className="text-sm text-gray-600 mb-2">
@@ -347,14 +349,13 @@ export default function ExplanationCard({ explanation }: CardProps) {
             placeholder="Enter your note..."
             className="w-full border px-2 py-1 rounded mb-2"
           />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-3 py-1 rounded"
-          >
+          <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
             Save
           </button>
         </form>
       )}
+
+      {/* Tooltip */}
       {tooltip.visible && (
         <div
           className="absolute bg-gray-800 text-white text-sm px-2 py-1 rounded shadow-lg pointer-events-none z-50"
@@ -367,7 +368,6 @@ export default function ExplanationCard({ explanation }: CardProps) {
           {tooltip.text}
         </div>
       )}
-
     </div>
   );
 }
