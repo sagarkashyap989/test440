@@ -1,17 +1,17 @@
 
 // components/PromptInput.tsx
-import { useExplanationStore } from '@/app/stores/explanationStore';
+// import { useExplanationStore } from '@/app/stores/explanationStore';
 import { useState } from 'react';
 
 
 type Props = {
   topicTitle: string;
-  fetchExplanations: Function;
+  fetchExplanations: () => void;
 };
 
 export default function PromptInput({ topicTitle, fetchExplanations }: Props) {
   const [prompt, setPrompt] = useState('');
-  const addExplanation = useExplanationStore((state) => state.addExplanation);
+  // const addExplanation = useExplanationStore((state) => state.addExplanation);
 
   const handleSubmit = async () => {
     // TODO: Call API with custom prompt

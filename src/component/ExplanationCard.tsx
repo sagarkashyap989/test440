@@ -1,6 +1,6 @@
 import { htmlToReact } from '@/lib/htmlToReact';
 import LikeButton from './LikeButton';
-import { CardProps } from '@/types';
+import { CardProps,Block } from '@/types';
 import { useState, useRef, useEffect } from 'react';
 import { useUserStore } from '@/app/stores/userStore';
 
@@ -65,6 +65,15 @@ export default function ExplanationCard({ explanation }: CardProps) {
   // -----------------------------------
   // fetchAnnotations
   // -----------------------------------
+  interface ApiNote {
+    highlight_type: string;
+    end_index: number;
+    note: string;
+    paragraph_index: number;
+    start_index: number;
+    text: string;
+  }
+
   useEffect(() => {
     const fetchAnnotations = async () => {
       try {
@@ -73,8 +82,8 @@ export default function ExplanationCard({ explanation }: CardProps) {
         if (!res.ok) return;
         const data = await res.json();
 
-        const fetchedNotes: NoteData[] = data.map((a: any) => ({
-          className:a.highlight_type,
+        const fetchedNotes: NoteData[] = data.map((a: ApiNote) => ({
+          className: a.highlight_type,
           end: a.end_index,
           note: a.note,
           paragraphIndex: a.paragraph_index,
@@ -237,12 +246,12 @@ export default function ExplanationCard({ explanation }: CardProps) {
 
   // -----------------------------------
   //  RENDER
-  // -----------------------------------
+  // ----------------------------------- 
   return (
     <div ref={containerRef} className="relative min-w-[300px] p-2 bg-gray-100 rounded-xl shadow">
       <div className="relative min-w-[300px] p-4 bg-gray-100 rounded-xl shadow">
         <div className="whitespace-pre-wrap text-gray-800 border p-3 rounded shadow-sm min-h-[80px]">
-          {explanation.text?.map((block: any, index: number) => {
+          {explanation.text?.map((block: Block, index: number) => {
             if (block.type === "paragraph") {
               return (
                 <div

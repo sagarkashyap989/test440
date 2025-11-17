@@ -9,10 +9,10 @@ interface Props { syllabus_id: string };
 
 export default function ClientSyllabus({ syllabus_id }: Props) {
   const user = useUserStore((state) => state.user);
-  const { learnedTopics, setLearnedTopics } = useLearnedTopicsStore();
+  const {   learnedTopics, setLearnedTopics } = useLearnedTopicsStore();
   const [parsedData, setParsedData] = useState();
   const [percentLearned, setPercentLearned] = useState(0);
-
+console.log(learnedTopics)
   const fetchData = useCallback(async () => {
     const res = await fetch(`/api/parse-syllabus?syllabus_id=${syllabus_id}`, {
       method: "POST",
@@ -61,8 +61,8 @@ export default function ClientSyllabus({ syllabus_id }: Props) {
   useEffect(() => {
     const run = async () => {
 
-      let allTopicLength = await fetchData();          // first get topicLength
-      let learnedTopicLength = await fetchLearnedTopics(); // then get learned topics
+      const allTopicLength = await fetchData();          // first get topicLength
+      const learnedTopicLength = await fetchLearnedTopics(); // then get learned topics
       if (allTopicLength) {
         const percentage = (learnedTopicLength /allTopicLength) * 100;
         setPercentLearned(Math.trunc(percentage));

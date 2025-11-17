@@ -2,7 +2,7 @@
 //ParsedSyllabus.tsx
 export type Explanation = {
   id: number;
-  text: any;
+  text: string;
   prompt: string;
   likes: number;
   liked_by?: number[];
@@ -81,3 +81,18 @@ export type TopicProps = {
 export type SyllabusProps = {
   modules: Module[];
 };
+
+interface ParagraphBlock {
+  type: "paragraph";
+  content: string;
+}
+
+interface TableBlock {
+  type: "table";
+  content: {
+    headers: string[];
+    rows: string[][];
+  };
+}
+
+export type Block = ParagraphBlock | TableBlock;

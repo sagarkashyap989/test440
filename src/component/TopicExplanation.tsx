@@ -55,7 +55,7 @@ export default function TopicExplanation({ topic }: TopicExplanationProps) {
 
   const explanation = sortedExplanations[currentIndex] || explanations[0];
   // Inside your TopicExplanation component
-  let structuredContent: { type: string; content: any }[] = [];
+  let structuredContent: { type: string; content: string }[] = [];
 
   try {
     const jsonMatch = explanation.text.match(/```(?:json)?\n([\s\S]*?)\n```/);
