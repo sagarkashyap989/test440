@@ -78,7 +78,7 @@ export default function ExplanationCard({ explanation }: CardProps) {
     const fetchAnnotations = async () => {
       try {
 
-        const res = await fetch(`/api/annotations?explanation_id=${explanation.id}`);
+        const res = await fetch(`/api/annotations?explanation_id=${explanation.id}&user_id=${user?.id}`);
         if (!res.ok) return;
         const data = await res.json();
 

@@ -4,7 +4,7 @@ So when we click the button extract text with orc but it does it. It converts th
 
 
 
-
+The API then calls the route slash groove which then calls. Insert_course_hierarchy function. 
 
 
 

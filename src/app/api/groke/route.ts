@@ -156,6 +156,7 @@ ONLY RETURN THE JSON OUTPUT, NOTHING ELSE. DO NOT INCLUDE ANY EXPLANATIONS.`;
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(responseText);
+      parsedResponse = parsedResponse[0]
     } catch (e) {
       // Sometimes Gemini returns JSON wrapped in markdown code blocks
       const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);
