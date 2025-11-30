@@ -141,7 +141,7 @@ export default function UploadPage() {
         }
       };
 
-      img.onerror = (e) => {
+      img.onerror = () => {
         reject(new Error('Failed to load image'));
       };
 
@@ -188,7 +188,9 @@ export default function UploadPage() {
         preprocessedDataUrl,
         'eng',
         {
-          logger: (m: any) => console.log('tesseract:', m),
+          logger: (m: unknown) => console.log('tesseract:', m),
+          //
+// 191:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
         }
       );
 

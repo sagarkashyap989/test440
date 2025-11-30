@@ -98,7 +98,7 @@ export default function ExplanationCard({ explanation }: CardProps) {
     };
 
     fetchAnnotations();
-  }, [explanation.id]);
+  }, [explanation.id, user?.id]);
 
   // -----------------------------------
   // saveAnnotationToBackend
