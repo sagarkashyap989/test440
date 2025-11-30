@@ -65,17 +65,19 @@ export type CarouselProps = {
 };
 export type TopicProps = {
   topic: {
-    id:number;
+    id: number;
     title: string;
     explanations: Explanation[] | null;
   };
-  topics:{ 
-    id:number;
+  topics: {
+    id: number;
     title: string;
     explanations: Explanation[] | null;
   }[];
   chpId: number;
   course_id: number;
+  title: string;       // you passed this, so include it
+  chp_name: string;
 };
 
 export type SyllabusProps = {

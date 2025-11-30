@@ -131,7 +131,7 @@ const handleMajorSubmit = async (major: Major) => {
       </button>
 
       {extractedText && (
-        <div className="mt-6 p-4 bg-gray-100 rounded shadow">
+        <div className="mt-6 p-4 bg-black-600 rounded shadow">
           <h2 className="text-lg font-medium mb-2">Extracted Text:</h2>
         </div>
       )}

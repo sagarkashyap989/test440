@@ -8,7 +8,7 @@ import { useTopicStore } from '@/app/stores/topicStore';
 import { useExplanationStore } from '@/app/stores/explanationStore';
 import { useState } from 'react';
 
-export default function TopicAccordion({ topic, chpId, topics, course_id }: TopicProps) {
+  export default function TopicAccordion({ topic, chpId, topics, course_id,title,chp_name }: TopicProps) {
   const isOpen = useTopicStore((state) => state.expandedTopics[topic.title] ?? false);
   const toggleTopicExpanded = useTopicStore((state) => state.toggleTopicExpanded);
   const addExplanations = useExplanationStore((state) => state.addExplanations);
@@ -18,7 +18,7 @@ export default function TopicAccordion({ topic, chpId, topics, course_id }: Topi
   const fetchExplanations = async ({ prompt = '' } = {}) => {
     // alert('calling');
     setLoading(true);
-    let contextString = '';
+    let contextString = `${title}, ${chp_name} `;
 
     topics.forEach((t) => {
       contextString += `, ${t.title}`;

@@ -1,3 +1,13 @@
+##How upload syllabus converts into 
+``How uploaded syllabus gets converted into text and then? It converts in it get passed through API, gork. 
+So when we click the button extract text with orc but it does it. It converts the image into text. The code is written in the page file as well. Then it sends the extracted text to the API that is api/gorke.``
+
+
+
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Startd

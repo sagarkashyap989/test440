@@ -1,10 +1,16 @@
 // components/SyllabusDisplay.tsx
 import { Fragment } from 'react';
 import TopicAccordion from './TopicAccordion';
-import { SyllabusProps } from '@/types'
+import { Module } from '@/types'
 
 
-export default function SyllabusDisplay({ modules }: SyllabusProps) {
+export default function SyllabusDisplay({
+  modules,
+  title,
+}: {
+  modules: Module[];
+  title: string;
+}) {
   return (
     <div className="space-y-6">
       {modules?.map((mod, modIdx) => (
@@ -28,6 +34,8 @@ export default function SyllabusDisplay({ modules }: SyllabusProps) {
                         chpId={chp.id}
                         topics={chp.topics}
                         course_id={chp.course_id}
+                        title={title} ///string
+                        chp_name={chp.name}//string
                       />
                     ))}
                   </div>

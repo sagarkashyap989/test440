@@ -73,7 +73,7 @@ export default function MajorSelectModal({
             <div className="fixed inset-0 bg-black/30" />
             <div className="fixed inset-0 flex items-center justify-center">
                 <Dialog.Panel className="bg-white p-6 rounded shadow max-w-md w-full">
-                    <Dialog.Title className="text-lg font-bold mb-4">Select Major</Dialog.Title>
+                    <Dialog.Title className="text-lg font-bold mb-4 text-gray-700">Select Major</Dialog.Title>
                     <input
                         type="text"
                         value={search || selectedMajor?.name}
@@ -81,7 +81,7 @@ export default function MajorSelectModal({
                             setSearch(e.target.value);
                             setNewMajor(e.target.value);
                         }}
-                        className="w-full px-3 py-2 border mb-2 rounded"
+                        className="w-full px-3 py-2 border mb-2 rounded text-gray-700	"
                         placeholder="Search or create new"
                     />
                     <div className="max-h-40 overflow-y-auto mb-4">
@@ -89,7 +89,7 @@ export default function MajorSelectModal({
                             <div
                                 key={m.id}
                                 onClick={() => handleSelect(m)}
-                                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
+                                className="p-2 hover:bg-gray-100 text-gray-700	 cursor-pointer rounded"
                             >
                                 {m.name}
                             </div>

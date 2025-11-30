@@ -36,7 +36,7 @@ export default function ParsedSyllabus({ data }: ParsedSyllabusProps) {
           </div>
         ))} */}
         
-             <SyllabusDisplay modules={data.modules} />
+             <SyllabusDisplay modules={data.modules} title={data?.course_title}/>
       </div>
     </div>
   );
